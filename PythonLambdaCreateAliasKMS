@@ -1,0 +1,29 @@
+class AliasManager:
+    def __init__(self, kms_client):
+        self.kms_client = kms_client
+        self.created_key = None
+
+
+    def create_alias(self, key_id):
+        """
+        Creates an alias for the specified key.
+
+        :param key_id: The ARN or ID of a key to give an alias.
+        :return: The alias given to the key.
+        """
+        alias = ""
+        while alias == "":
+            alias = input(f"What alias would you like to give to key {key_id}? ")
+        try:
+            self.kms_client.create_alias(AliasName=alias, TargetKeyId=key_id)
+        except ClientError as err:
+            logger.error(
+                "Couldn't create alias %s. Here's why: %s",
+                alias,
+                err.response["Error"]["Message"],
+            )
+        else:
+            print(f"Created alias {alias} for key {key_id}.")
+            return alias
+
+
